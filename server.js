@@ -68,5 +68,17 @@ app.post('/led', async (req, res) => {
     }
 });
 
+// Forward the request to the ESP32
+    const espUrl = `http://<ESP32-IP-Address>/change_wifi`;
+    fetch(espUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({ ssid, password }),
+    })
+        .then((response) => response.text())
+        .then((data) => res.status(200).send({ message: data }))
+        .catch((error) => res.status(500).send({ error: 'Failed to update Wi-Fi credentials' }));
+});
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
