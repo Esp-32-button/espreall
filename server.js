@@ -78,7 +78,7 @@ app.post('/led', async (req, res) => {
         .then((response) => response.text())
         .then((data) => res.status(200).send({ message: data }))
         .catch((error) => res.status(500).send({ error: 'Failed to update Wi-Fi credentials' }));
-});
+
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
