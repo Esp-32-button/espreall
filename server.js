@@ -83,6 +83,24 @@ app.post('/wifi', (req, res) => {
         .catch((error) => res.status(500).send({ error: 'Failed to update Wi-Fi credentials' }));
 });
 
+function authenticateToken(req, res, next) {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1]; // Extract token from "Bearer <token>"
+
+    if (!token) {
+        return res.status(401).json({ error: 'Access token is missing.' });
+    }
+
+    jwt.verify(token, SECRET_KEY, (err, user) => {
+        if (err) {
+            return res.status(403).json({ error: 'Invalid or expired token.' });
+        }
+        req.user = user; // Add user data to request object
+        next(); // Pass control to the next middleware or route handler
+    });
+}
+
+
 app.post('/change_wifi', authenticateToken, async (req, res) => {
     const { ssid, password } = req.body;
 
