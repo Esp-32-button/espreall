@@ -83,5 +83,29 @@ app.post('/wifi', (req, res) => {
         .catch((error) => res.status(500).send({ error: 'Failed to update Wi-Fi credentials' }));
 });
 
+app.post('/change_wifi', authenticateToken, async (req, res) => {
+    const { ssid, password } = req.body;
+
+    if (!ssid || !password) {
+        return res.status(400).json({ error: 'SSID and Password are required.' });
+    }
+
+    try {
+        const response = await axios.post('http://<ESP32_IP_ADDRESS>/change_wifi', {
+            ssid,
+            password,
+        });
+
+        if (response.status === 200) {
+            res.json({ message: 'Wi-Fi information updated successfully.' });
+        } else {
+            res.status(500).json({ error: 'Failed to update Wi-Fi on the ESP32.' });
+        }
+    } catch (error) {
+        res.status(500).json({ error: 'Error communicating with ESP32.' });
+    }
+});
+
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
